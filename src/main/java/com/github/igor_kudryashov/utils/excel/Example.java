@@ -14,21 +14,21 @@ public class Example {
 		// create a second worksheet
 		Sheet sheet2 = writer.createSheet("Sheet2");
 
-		// create header of table for first worksheet
-		writer.createRow(sheet1, new String[] { "Column 1", "Column 2", "Column 3" }, true);
-		// create header of table for second worksheet
-		writer.createRow(sheet2, new String[] { "Column 1", "Column 2", "Column 3" }, true);
+		// create header of table for first worksheet with style
+		writer.createRow(sheet1, new String[] { "Column 1", "Column 2", "Column 3" }, true, true);
+		// create header of table for second worksheet without style
+		writer.createRow(sheet2, new String[] { "Column 1", "Column 2", "Column 3" }, true, false);
 
 		// work with first worksheet
 		for (int x = 0; x < 3; x++) {
-			// create simple row
-			writer.createRow(sheet1, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, false);
+			// create simple row with style
+			writer.createRow(sheet1, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, false, true);
 		}
 
 		// work with second worksheet
 		for (int x = 0; x < 3; x++) {
-			// create simple row
-			writer.createRow(sheet2, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, false);
+			// create simple row without style
+			writer.createRow(sheet2, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, false, false);
 		}
 
 		// format first worksheet

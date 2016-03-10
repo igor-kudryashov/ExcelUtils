@@ -76,7 +76,7 @@ public class ExcelWriter {
         // delete back slash in name
         String sheetName = name.replaceAll("\\\\", "-").trim();
         // create new worksheet
-        SXSSFSheet sheet = workbook.getSheet(name);
+        Sheet sheet = workbook.getSheet(name);
         if (sheet == null) {
             sheet = workbook.createSheet(sheetName);
         }
@@ -95,12 +95,13 @@ public class ExcelWriter {
     /**
      * Creates new row in the worksheet
      *
-     * @param sheet  Name of Sheet
-     * @param values the value of the new cell line
-     * @param header <code>true</code> if this row is the header, otherwise <code>false</code>
+     * @param sheet     Name of Sheet
+     * @param values    the value of the new cell line
+     * @param header    <code>true</code> if this row is the header, otherwise <code>false</code>
+     * @param withStyle <code>true</code> if in this row will be applied styles for the cells, otherwise <code>false</code>
      * @return created row
      */
-    public Row createRow(Sheet sheet, Object[] values, boolean header) {
+    public Row createRow(Sheet sheet, Object[] values, boolean header, boolean withStyle) {
         Row row;
         String sheetName = sheet.getSheetName();
         int rownum = 0;
@@ -124,7 +125,9 @@ public class ExcelWriter {
                 } else if (o.getClass().getName().contains("Date")) {
                     cell.setCellValue((Date) values[x]);
                 }
-                cell.setCellStyle(getCellStyle(rownum, values[x], header));
+                if (withStyle) {
+                    cell.setCellStyle(getCellStyle(rownum, values[x], header));
+                }
             }
             // save max column width
             saveColumnWidth(sheet, x, o);
@@ -252,7 +255,7 @@ public class ExcelWriter {
      */
     public void setAutoSizeColumns(Sheet sheet, boolean withHeader) {
         if (withHeader) {
-            int x = sheet.getRow(1).getLastCellNum();
+            int x = sheet.getRow(sheet.getLastRowNum()).getLastCellNum();
             CellRangeAddress range = new CellRangeAddress(0, 0, 0, x - 1);
             sheet.setAutoFilter(range);
             sheet.createFreezePane(0, 1);
@@ -274,11 +277,9 @@ public class ExcelWriter {
      * @throws IOException
      */
     public boolean saveToFile(String fileName) throws IOException {
-        for (Sheet aWorkbook : workbook) {
-            SXSSFSheet sheet = (SXSSFSheet) aWorkbook;
-            if (!sheet.areAllRowsFlushed()) {
-                sheet.flushRows();
-            }
+        for (int x = 0; x < workbook.getNumberOfSheets(); x++) {
+            SXSSFSheet sheet = workbook.getSheetAt(x);
+            sheet.flushRows();
         }
         // Write the output to a file
         FileOutputStream fileOut = new FileOutputStream(fileName);
