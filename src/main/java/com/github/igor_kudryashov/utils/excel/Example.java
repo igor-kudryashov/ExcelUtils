@@ -2,6 +2,7 @@ package com.github.igor_kudryashov.utils.excel;
 
 import java.io.IOException;
 
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 public class Example {
@@ -19,22 +20,27 @@ public class Example {
 		// create header of table for second worksheet without style
 		writer.createRow(sheet2, new String[] { "Column 1", "Column 2", "Column 3" }, true, false);
 
+
 		// work with first worksheet
 		for (int x = 0; x < 3; x++) {
 			// create simple row with style
-			writer.createRow(sheet1, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, false, true);
+			Row row = writer.createRow(sheet1, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, false, true);
+			// append hyperlink
+			writer.createHyperlink(sheet1, row.getRowNum(), 2, "http://www.microsoft.com");
 		}
 
 		// work with second worksheet
 		for (int x = 0; x < 3; x++) {
 			// create simple row without style
-			writer.createRow(sheet2, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, false, false);
+			Row row = writer.createRow(sheet2, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, false, true);
+			// append hyperlink
+			writer.createHyperlink(sheet2, row.getRowNum(), 2, "http://www.ibm.com");
 		}
 
 		// format first worksheet
 		writer.setAutoSizeColumns(sheet1, true);
 		// format second worksheet
-		writer.setAutoSizeColumns(sheet2, true);
+		writer.setAutoSizeColumns(sheet2, false);
 
 		// save the workbook to file
 		try {
