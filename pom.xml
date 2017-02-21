@@ -10,7 +10,7 @@
 	<properties>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
-		<poi-version>3.14</poi-version>
+		<poi-version>3.15</poi-version>
 		<!-- Timestamp of build -->
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
@@ -46,7 +46,7 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>${poi-version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>ooxml-schemas</artifactId>
 			<version>1.1</version>
@@ -55,6 +55,6 @@
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
 			<version>2.6.0</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 </project>
