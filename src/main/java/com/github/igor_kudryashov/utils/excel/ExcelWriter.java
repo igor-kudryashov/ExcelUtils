@@ -15,7 +15,7 @@
    limitations under the License.
 ==================================================================== */
 
-package com.github.igor_kudryashov.utils.excel;
+package com.github.igor_kudryashov.excelutils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
