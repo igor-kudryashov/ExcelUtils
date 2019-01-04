@@ -1,4 +1,4 @@
-package com.github.igor_kudryashov.excelutils;
+package com.github.igor_kudryashov.utils.excel;
 
 import java.io.IOException;
 

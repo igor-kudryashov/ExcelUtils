@@ -15,7 +15,7 @@
    limitations under the License.
 ==================================================================== */
 
-package com.github.igor_kudryashov.excelutils;
+package com.github.igor_kudryashov.utils.excel;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -86,8 +86,7 @@ public class ExcelWriter {
 	/**
 	 * Creates a new sheet in the workbook
 	 *
-	 * @param name
-	 *            Name of sheet
+	 * @param name Name of sheet
 	 * @return Created sheet
 	 */
 	public Sheet createSheet(String name) {
@@ -113,16 +112,12 @@ public class ExcelWriter {
 	/**
 	 * Creates new row in the worksheet
 	 *
-	 * @param sheet
-	 *            Sheet
-	 * @param values
-	 *            the value of the new cell line
-	 * @param header
-	 *            <code>true</code> if this row is the header, otherwise
-	 *            <code>false</code>
-	 * @param withStyle
-	 *            <code>true</code> if in this row will be applied styles for
-	 *            the cells, otherwise <code>false</code>
+	 * @param sheet     Sheet
+	 * @param values    the value of the new cell line
+	 * @param header    <code>true</code> if this row is the header, otherwise
+	 *                  <code>false</code>
+	 * @param withStyle <code>true</code> if in this row will be applied styles for
+	 *                  the cells, otherwise <code>false</code>
 	 * @return created row
 	 */
 	@SuppressWarnings("unchecked")
@@ -150,17 +145,26 @@ public class ExcelWriter {
 				} else {
 					if (o instanceof Collection) {
 						ArrayList<Object> list = new ArrayList<Object>();
-						list.addAll((Collection<Object>) o);
-						StringBuffer sb = new StringBuffer();
+						String s = null;
 						int maxLine = 0;
-						for (Object object : list) {
-							String line = object.toString();
-							sb.append(line + "\n");
-							if (maxLine < line.length()) {
-								maxLine = line.length();
+						list.addAll((Collection<Object>) o);
+						if (list.size() > 1) {
+							StringBuffer sb = new StringBuffer();
+							sb.append(list.get(0).toString());
+							for (int i = 1; i < list.size(); i++) {
+								sb.append("\n");
+								String line = list.get(x).toString();
+								sb.append(line);
+								if (maxLine < line.length()) {
+									maxLine = line.length();
+								}
 							}
+							s = sb.toString();
+						} else {
+							s = (String) list.get(0);
+							maxLine = s.length();
 						}
-						String s = sb.toString();
+
 						cell.setCellValue(s);
 						if (withStyle) {
 							cell.setCellStyle(getCellStyle(rownum, s, header));
@@ -188,19 +192,14 @@ public class ExcelWriter {
 
 	/**
 	 * 
-	 * Adds a hyperlink into a cell. The contents of the cell remains
-	 * peronachalnoe. Do not forget to fill in the contents of the cell before
-	 * add a hyperlinks. If a row already has been flushed, this method not
-	 * work!
+	 * Adds a hyperlink into a cell. The contents of the cell remains peronachalnoe.
+	 * Do not forget to fill in the contents of the cell before add a hyperlinks. If
+	 * a row already has been flushed, this method not work!
 	 * 
-	 * @param sheet
-	 *            Sheet
-	 * @param rownum
-	 *            number of row
-	 * @param colnum
-	 *            number of column
-	 * @param url
-	 *            hyperlink
+	 * @param sheet  Sheet
+	 * @param rownum number of row
+	 * @param colnum number of column
+	 * @param url    hyperlink
 	 */
 	public void createHyperlink(Sheet sheet, int rownum, int colnum, String url) {
 		Row row = sheet.getRow(rownum);
@@ -217,10 +216,8 @@ public class ExcelWriter {
 	/**
 	 * Returns a hyperlink style of cell
 	 * 
-	 * @param rownum
-	 *            the number of row for count odd/even rows
-	 * @param entry
-	 *            value of cell
+	 * @param rownum the number of row for count odd/even rows
+	 * @param entry  value of cell
 	 * @return the hyperlink style of cell
 	 */
 	private XSSFCellStyle getHyperlinkCellStyle(int rownum, Object entry) {
@@ -245,13 +242,10 @@ public class ExcelWriter {
 	/**
 	 * Returns a style of cell
 	 *
-	 * @param rownum
-	 *            the number of row for count odd/even rows
-	 * @param entry
-	 *            value of cell
-	 * @param header
-	 *            <code>true</code> if this row is the header, otherwise
-	 *            <code>false</code>
+	 * @param rownum the number of row for count odd/even rows
+	 * @param entry  value of cell
+	 * @param header <code>true</code> if this row is the header, otherwise
+	 *               <code>false</code>
 	 * @return the cell style
 	 */
 	private XSSFCellStyle getCellStyle(int rownum, Object entry, boolean header) {
@@ -318,12 +312,9 @@ public class ExcelWriter {
 	/**
 	 * Stores the maximum width of the column
 	 *
-	 * @param sheet
-	 *            Name of worksheet
-	 * @param x
-	 *            number of column
-	 * @param value
-	 *            cell value
+	 * @param sheet Name of worksheet
+	 * @param x     number of column
+	 * @param value cell value
 	 */
 	private void saveColumnWidth(Sheet sheet, int x, Object value) {
 		String sheetName = sheet.getSheetName();
@@ -369,11 +360,9 @@ public class ExcelWriter {
 	/**
 	 * Format a table of worksheet
 	 *
-	 * @param sheet
-	 *            Name of sheet
-	 * @param withHeader
-	 *            <code>true</code> for create auto filter and freeze pane in
-	 *            first row, otherwise <code>false</code>
+	 * @param sheet      Name of sheet
+	 * @param withHeader <code>true</code> for create auto filter and freeze pane in
+	 *                   first row, otherwise <code>false</code>
 	 */
 	public void setAutoSizeColumns(Sheet sheet, boolean withHeader) {
 		if (sheet.getLastRowNum() > 0) {
@@ -396,10 +385,8 @@ public class ExcelWriter {
 	/**
 	 * Save a workbook in file
 	 *
-	 * @param fileName
-	 *            filename
-	 * @return <code>true</code> if saved successfully, otherwise
-	 *         <code>false</code>
+	 * @param fileName filename
+	 * @return <code>true</code> if saved successfully, otherwise <code>false</code>
 	 * @throws IOException
 	 */
 	public boolean saveToFile(String fileName) throws IOException {
