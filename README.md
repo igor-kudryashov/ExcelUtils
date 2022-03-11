@@ -1,6 +1,7 @@
 # ExcelUtils
 The ExcelWriter is a simple helper for create Microsoft Excel workbook via Apache POI
-#ussage
+
+## Ussage
 ```java
 public class Example {
 	public static void main(String[] args) {
