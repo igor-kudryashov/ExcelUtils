@@ -1,64 +1,92 @@
 package com.github.igor_kudryashov.utils.excel;
 
-import java.io.IOException;
-
+import com.github.javafaker.Faker;
+import com.github.javafaker.service.FakeValuesService;
+import com.github.javafaker.service.RandomService;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import java.io.IOException;
+import java.util.Locale;
 
+/**
+ * An example of using the ExcelWriter class
+ *
+ * @author igor.kudryashov@gmail.com
+ * @version 2023-06-25
+ */
 public class Example {
-	public static void main(String[] args) {
-		// create an Excel workbook
-		ExcelWriter writer = new ExcelWriter();
+    public static void main(String[] args) {
+        // create an Excel workbook
+        ExcelWriter writer = new ExcelWriter();
 
-		// create a first worksheet
-		Sheet sheet1 = writer.createSheet("Sheet1");
-		// create a second worksheet
-		Sheet sheet2 = writer.createSheet("Sheet2");
+        // create a first worksheet
+        Sheet sheet1 = writer.createSheet("Sheet1");
+        // create a second worksheet
+        Sheet sheet2 = writer.createSheet("Sheet2");
 
-		// create style
-		XSSFCellStyle style1 = (XSSFCellStyle) writer.getWorkbook().createCellStyle();
-		style1.setFillForegroundColor(IndexedColors.LIME.getIndex());
-		style1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        // create style for header row
+        XSSFCellStyle headerStyle = (XSSFCellStyle) writer.getWorkbook().createCellStyle();
+        XSSFFont headerFont = (XSSFFont) sheet2.getWorkbook().createFont();
+        headerStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+        headerFont.setColor(IndexedColors.WHITE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setFont(headerFont);
 
-		// create header of table for first worksheet with style
-		writer.createRow(sheet1, new String[] { "Column 1", "Column 2", "Column 3" }, style1);
-		// create header of table for second worksheet without style
-		writer.createRow(sheet2, new String[] { "Column 1", "Column 2", "Column 3" }, null);
+        // custom color example
+//		byte[] rgb = {(byte)153, (byte)204, (byte) 255};
+//		headerStyle.setFillForegroundColor(new XSSFColor(rgb, new DefaultIndexedColorMap()));
+//		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-		// create style
-		XSSFCellStyle style2 = (XSSFCellStyle) writer.getWorkbook().createCellStyle();
-		style2.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
-		style2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        // create table header with default style
+        writer.createRow(sheet1, new String[]{"Name", "Email", "Birthday", "Sum", "Site"}, null);
 
-		// work with first worksheet
-		for (int x = 0; x < 3; x++) {
-			// create simple row with style
-			Row row = writer.createRow(sheet1, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, style2);
-			// append hyperlink
-			writer.createHyperlink(sheet1, row.getRowNum(), 2, "http://www.microsoft.com", style2);
-		}
+        // create table header with custom header row style
+        writer.createRow(sheet2, new String[]{"Name", "Email", "Birthday", "Sum", "Site"}, headerStyle);
 
-		// work with second worksheet
-		for (int x = 0; x < 3; x++) {
-			// create simple row without style
-			Row row = writer.createRow(sheet2, new Object[] { "Cell 1", "Cell 2", "Cell 3" }, null);
-			// append hyperlink
-			writer.createHyperlink(sheet2, row.getRowNum(), 2, "http://www.ibm.com", null);
-		}
+        // create custom style for alternate row
+        XSSFCellStyle styleEven = (XSSFCellStyle) writer.getWorkbook().createCellStyle();
+        styleEven.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+        styleEven.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-		// format first worksheet
-		writer.setAutoSizeColumns(sheet1, true);
-		// format second worksheet
-		writer.setAutoSizeColumns(sheet2, false);
+        // to create worksheet content I use the "Java Faker" project https://github.com/DiUS/java-faker
+        FakeValuesService fakeValuesService = new FakeValuesService(new Locale("en-GB"), new RandomService());
 
-		// save the workbook to file
-		try {
-			writer.saveToFile("file.xlsx");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        // create content for first worksheet with row with default style
+        for (int x = 0; x < 100; x++) {
+            Faker faker = new Faker();
+            // create simple row with style
+            writer.createRow(sheet1, new Object[]{faker.name().fullName(), faker.internet().emailAddress(),
+                    faker.date().birthday(), Double.valueOf(faker.commerce().price().replace(",", ".")),
+                    faker.internet().url()}, null);
+        }
+
+        // create content for second worksheet with row with custom style
+        for (int x = 0; x < 100; x++) {
+            Faker faker = new Faker();
+            if (x % 2 == 0) {
+                writer.createRow(sheet2, new Object[]{faker.name().fullName(), faker.internet().emailAddress(),
+                        faker.date().birthday(), Double.valueOf(faker.commerce().price().replace(",", ".")),
+                        faker.internet().url()}, styleEven);
+            } else {
+                writer.createRow(sheet2, new Object[]{faker.name().fullName(), faker.internet().emailAddress(),
+                        faker.date().birthday(), Double.valueOf(faker.commerce().price().replace(",", ".")),
+                        faker.internet().url()}, null);
+            }
+        }
+
+        // format worksheets
+        writer.setAutoSizeColumns(sheet1, true);
+        writer.setAutoSizeColumns(sheet2, true);
+
+        // save the workbook to file
+        try {
+            writer.saveToFile("file.xlsx");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
